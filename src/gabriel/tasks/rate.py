@@ -151,6 +151,11 @@ class Rate:
         csv_path = os.path.join(self.cfg.save_dir, f"{base_name}_raw_responses.csv")
 
         kwargs.setdefault("use_web_search", self.cfg.modality == "web")
+        kwargs.setdefault("json_mode", self.cfg.modality != "audio")
+        kwargs.setdefault("timeout", self.cfg.timeout)
+        kwargs.setdefault("model", self.cfg.model)
+        kwargs.setdefault("n_parallels", self.cfg.n_parallels)
+        kwargs.setdefault("use_dummy", self.cfg.use_dummy)
 
         if not isinstance(self.cfg.n_runs, int) or self.cfg.n_runs < 1:
             raise ValueError("n_runs must be an integer >= 1")
@@ -161,12 +166,7 @@ class Rate:
                 identifiers=ids,
                 prompt_images=prompt_images,
                 prompt_audio=prompt_audio,
-                n_parallels=self.cfg.n_parallels,
-                model=self.cfg.model,
                 save_path=csv_path,
-                use_dummy=self.cfg.use_dummy,
-                timeout=self.cfg.timeout,
-                json_mode=self.cfg.modality != "audio",
                 reset_files=reset_files,
                 reasoning_effort=self.cfg.reasoning_effort,
                 reasoning_summary=self.cfg.reasoning_summary,
@@ -198,12 +198,7 @@ class Rate:
                 identifiers=ids_all,
                 prompt_images=prompt_images_all,
                 prompt_audio=prompt_audio_all,
-                n_parallels=self.cfg.n_parallels,
-                model=self.cfg.model,
                 save_path=csv_path,
-                use_dummy=self.cfg.use_dummy,
-                timeout=self.cfg.timeout,
-                json_mode=self.cfg.modality != "audio",
                 reset_files=reset_files,
                 reasoning_effort=self.cfg.reasoning_effort,
                 reasoning_summary=self.cfg.reasoning_summary,

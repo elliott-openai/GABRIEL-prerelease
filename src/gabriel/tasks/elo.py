@@ -334,6 +334,12 @@ class EloRater:
         history_pairs: Dict[str, List[Tuple[str, str]]] = {a: [] for a in attr_keys}
         se_store: Dict[str, Dict[str, float]] = {a: {i: np.nan for i in item_ids} for a in attr_keys}
 
+        kwargs.setdefault("json_mode", self.cfg.modality != "audio")
+        kwargs.setdefault("timeout", self.cfg.timeout)
+        kwargs.setdefault("model", self.cfg.model)
+        kwargs.setdefault("n_parallels", self.cfg.n_parallels)
+        kwargs.setdefault("use_dummy", self.cfg.use_dummy)
+
         def expected(r_a: float, r_b: float) -> float:
             return 1 / (1 + 10 ** ((r_b - r_a) / 400))
 
@@ -398,13 +404,8 @@ class EloRater:
                 identifiers=ids,
                 prompt_images=pair_images or None,
                 prompt_audio=pair_audio or None,
-                n_parallels=self.cfg.n_parallels,
-                model=self.cfg.model,
-                json_mode=self.cfg.modality != "audio",
                 save_path=os.path.join(self.save_path, f"round{rnd}.csv"),
                 reset_files=reset_files,
-                use_dummy=self.cfg.use_dummy,
-                timeout=self.cfg.timeout,
                 reasoning_effort=self.cfg.reasoning_effort,
                 reasoning_summary=self.cfg.reasoning_summary,
                 print_example_prompt=self.cfg.print_example_prompt,

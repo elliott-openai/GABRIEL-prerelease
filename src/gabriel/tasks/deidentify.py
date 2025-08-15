@@ -51,6 +51,7 @@ class Deidentifier:
         df: pd.DataFrame,
         text_column: str,
         grouping_column: Optional[str] = None,
+        **kwargs: Any,
     ) -> pd.DataFrame:
         """Deidentify all texts in ``df[text_column]``.
 
@@ -85,6 +86,12 @@ class Deidentifier:
         group_to_map: Dict[str, dict] = {gid: {} for gid in group_ids}
         max_rounds = max(len(s) for s in group_segments.values()) if group_segments else 0
 
+        kwargs.setdefault("json_mode", True)
+        kwargs.setdefault("timeout", self.cfg.timeout)
+        kwargs.setdefault("model", self.cfg.model)
+        kwargs.setdefault("n_parallels", self.cfg.n_parallels)
+        kwargs.setdefault("use_dummy", self.cfg.use_dummy)
+
         for rnd in range(max_rounds):
             prompts: List[str] = []
             identifiers: List[str] = []
@@ -107,14 +114,10 @@ class Deidentifier:
             batch_df = await get_all_responses(
                 prompts=prompts,
                 identifiers=identifiers,
-                n_parallels=self.cfg.n_parallels,
-                model=self.cfg.model,
                 save_path=f"{base_root}_round{rnd}{ext}",
-                use_dummy=self.cfg.use_dummy,
-                timeout=self.cfg.timeout,
-                json_mode=True,
                 reasoning_effort=self.cfg.reasoning_effort,
                 reasoning_summary=self.cfg.reasoning_summary,
+                **kwargs,
             )
             for ident, resp in zip(batch_df["Identifier"], batch_df["Response"]):
                 gid = ident.split("_seg_")[0]

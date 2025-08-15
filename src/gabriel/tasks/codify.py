@@ -505,6 +505,7 @@ class Codify:
         use_dummy: bool = False,
         reasoning_effort: Optional[str] = None,
         reasoning_summary: Optional[str] = None,
+        **kwargs: Any,
     ) -> pd.DataFrame:
         """
         Process all texts in the dataframe, coding passages according to categories.
@@ -598,21 +599,23 @@ class Codify:
         
         # Process all chunks - let the model handle JSON structure naturally
         expected_schema = None
-        
+
+        kwargs.setdefault("json_mode", True)
+        kwargs.setdefault("timeout", 300)
+        kwargs.setdefault("print_example_prompt", True)
+        kwargs.setdefault("n_parallels", n_parallels)
+        kwargs.setdefault("model", model)
+        kwargs.setdefault("use_dummy", use_dummy)
+
         batch_df = await get_all_responses(
             prompts=prompts,
             identifiers=identifiers,
-            n_parallels=n_parallels,
             save_path=os.path.join(save_dir, file_name),
             reset_files=reset_files,
-            use_dummy=use_dummy,
-            json_mode=True,
             expected_schema=expected_schema,
-            model=model,
-            timeout=300,  # This will be forwarded to get_response via **kwargs
-            print_example_prompt=True,
             reasoning_effort=reasoning_effort,
             reasoning_summary=reasoning_summary,
+            **kwargs,
         )
         
         # Group results by original text index and batch

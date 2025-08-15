@@ -126,15 +126,15 @@ class Paraphrase:
         # will append to an existing file unless ``reset_files`` is
         # supplied.
         save_path = os.path.join(self.cfg.save_dir, self.cfg.file_name)
+        kwargs.setdefault("model", self.cfg.model)
+        kwargs.setdefault("json_mode", self.cfg.json_mode)
+        kwargs.setdefault("use_web_search", self.cfg.use_web_search)
+        kwargs.setdefault("n_parallels", self.cfg.n_parallels)
+        kwargs.setdefault("use_dummy", self.cfg.use_dummy)
         resp_df = await get_all_responses(
             prompts=prompts,
             identifiers=identifiers,
             save_path=save_path,
-            model=self.cfg.model,
-            json_mode=self.cfg.json_mode,
-            use_web_search=self.cfg.use_web_search,
-            n_parallels=self.cfg.n_parallels,
-            use_dummy=self.cfg.use_dummy,
             reset_files=reset_files,
             reasoning_effort=self.cfg.reasoning_effort,
             reasoning_summary=self.cfg.reasoning_summary,

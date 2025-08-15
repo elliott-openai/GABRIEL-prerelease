@@ -3,7 +3,7 @@ from __future__ import annotations
 import os
 from dataclasses import dataclass
 from datetime import datetime
-from typing import List, Optional
+from typing import List, Optional, Any
 
 import pandas as pd
 
@@ -65,24 +65,24 @@ class Regional:
                 ids.append(f"{region}|{topic}")
         return prompts, ids
 
-    async def run(self, *, reset_files: bool = False, **kwargs) -> pd.DataFrame:
+    async def run(self, *, reset_files: bool = False, **kwargs: Any) -> pd.DataFrame:
         prompts, ids = self._build()
         csv_path = os.path.join(self.save_path, "regional_responses.csv")
+        kwargs.setdefault("use_web_search", True)
+        kwargs.setdefault("search_context_size", self.cfg.search_context_size)
+        kwargs.setdefault("max_tokens", 50000)
+        kwargs.setdefault("timeout", 450)
+        kwargs.setdefault("model", self.cfg.model)
+        kwargs.setdefault("n_parallels", self.cfg.n_parallels)
+        kwargs.setdefault("use_dummy", self.cfg.use_dummy)
         resp_df = await get_all_responses(
             prompts=prompts,
             identifiers=ids,
-            n_parallels=self.cfg.n_parallels,
-            model=self.cfg.model,
-            use_web_search=True,
-            search_context_size=self.cfg.search_context_size,
             reasoning_effort=self.cfg.reasoning_effort,
             reasoning_summary=self.cfg.reasoning_summary,
             save_path=csv_path,
             reset_files=reset_files,
-            use_dummy=self.cfg.use_dummy,
             print_example_prompt=self.cfg.print_example_prompt,
-            max_tokens=50000,
-            timeout=450,
             **kwargs,
         )
 

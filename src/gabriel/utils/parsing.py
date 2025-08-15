@@ -142,6 +142,7 @@ async def clean_json_df(
     save_path: Optional[str] = None,
     reasoning_effort: Optional[str] = None,
     reasoning_summary: Optional[str] = None,
+    **kwargs: Any,
 ) -> pd.DataFrame:
     """Ensure specified DataFrame columns contain valid JSON.
 
@@ -227,17 +228,18 @@ async def clean_json_df(
         else:
             tmp_path = save_path
         try:
+            kwargs.setdefault("json_mode", True)
+            kwargs.setdefault("print_example_prompt", False)
             resp_df = await get_all_responses(
                 prompts=prompts,
                 identifiers=identifiers,
                 model=model,
-                json_mode=True,
                 use_dummy=use_dummy,
                 reasoning_effort=reasoning_effort,
                 reasoning_summary=reasoning_summary,
-                print_example_prompt=False,
                 save_path=tmp_path,
                 reset_files=True,
+                **kwargs,
             )
         finally:
             if cleanup:

@@ -189,7 +189,13 @@ class RecursiveEloRater:
     # ------------------------------ Public ------------------------------
 
     async def run(
-        self, df: pd.DataFrame, text_col: str, id_col: str, *, reset_files: bool = False
+        self,
+        df: pd.DataFrame,
+        text_col: str,
+        id_col: str,
+        *,
+        reset_files: bool = False,
+        **kwargs: Any,
     ) -> pd.DataFrame:
         """
         Execute recursive Elo rating.
@@ -260,6 +266,7 @@ class RecursiveEloRater:
                 text_col="text",
                 id_col="identifier",
                 reset_files=reset_files,
+                **kwargs,
             )
 
             # Record stage columns if desired

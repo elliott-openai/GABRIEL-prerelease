@@ -644,6 +644,11 @@ class Rank:
         final_path = os.path.join(self.cfg.save_dir, f"{base_name}_final.csv")
 
         kwargs.setdefault("use_web_search", self.cfg.modality == "web")
+        kwargs.setdefault("json_mode", self.cfg.modality != "audio")
+        kwargs.setdefault("timeout", self._TIMEOUT)
+        kwargs.setdefault("model", self.cfg.model)
+        kwargs.setdefault("n_parallels", self.cfg.n_parallels)
+        kwargs.setdefault("use_dummy", self.cfg.use_dummy)
         # Determine how many rounds have already been processed when
         # `reset_files` is False.  We look for files named
         # ``<base_name>_round<k>.csv`` to infer progress.  If a final
@@ -971,13 +976,8 @@ class Rank:
                 identifiers=ids,
                 prompt_images=pair_images or None,
                 prompt_audio=pair_audio or None,
-                n_parallels=self.cfg.n_parallels,
-                model=self.cfg.model,
-                json_mode=self.cfg.modality != "audio",
                 save_path=round_path,
                 reset_files=reset_files,
-                use_dummy=self.cfg.use_dummy,
-                timeout=self._TIMEOUT,
                 reasoning_effort=self.cfg.reasoning_effort,
                 reasoning_summary=self.cfg.reasoning_summary,
                 **kwargs,

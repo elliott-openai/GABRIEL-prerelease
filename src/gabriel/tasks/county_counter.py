@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import os
 from datetime import datetime
-from typing import List, Optional, Dict
+from typing import List, Optional, Dict, Any
 
 import pandas as pd
 
@@ -78,8 +78,8 @@ class CountyCounter:
         )
         self.regional = Regional(self.df, self.county_col, self.topics, reg_cfg)
 
-    async def run(self, *, reset_files: bool = False) -> pd.DataFrame:
-        reports_df = await self.regional.run(reset_files=reset_files)
+    async def run(self, *, reset_files: bool = False, **kwargs: Any) -> pd.DataFrame:
+        reports_df = await self.regional.run(reset_files=reset_files, **kwargs)
         results = reports_df[["region"]].copy()
 
         for topic in self.topics:
@@ -107,7 +107,11 @@ class CountyCounter:
                 )
             rater = EloRater(cfg)
             elo_df = await rater.run(
-                df_topic, text_col="text", id_col="identifier", reset_files=reset_files
+                df_topic,
+                text_col="text",
+                id_col="identifier",
+                reset_files=reset_files,
+                **kwargs,
             )
             elo_df["identifier"] = elo_df["identifier"].astype(str)
             results["region"] = results["region"].astype(str)
